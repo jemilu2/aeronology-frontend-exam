@@ -2,6 +2,10 @@
   text-align: center;
 }
 
+* {
+  font-family:'Roboto', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -13,13 +17,45 @@
   }
 }
 
-.App-header {
+.App {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
   font-size: calc(10px + 2vmin);
+}
+
+.todo-header  {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  min-width: 50vw;
+  max-width: 50vw;
+  margin-bottom: 4rem;
+}
+
+.todos-container {
+  border: 1px #c4c4c4 solid;
+  padding: 3rem;
+  max-width: 60vw;
+}
+
+.todo-header-container {
+  border: 1px #c4c4c4 solid;
+  padding: 3rem;
+  margin-bottom: 3rem;
+  max-width: 60vw;
+  max-height: 6vh;
+}
+
+.todo-input {
+  flex-grow: 1;
+  display: block;
+}
+
+.add-todo-btn {
+  margin-left: 20px !important;
 }
 
 .App-link {

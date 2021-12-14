@@ -1,0 +1,18 @@
+.todo-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  min-width: 50vw;
+  max-width: 50vw;
+}
+
+.todo-title {
+  flex-grow: 1;
+  margin-right: 20px;
+  display: block;
+}
+
+.action-btn {
+  margin-left: 10px !important;
+  display: inline-block;
+}
