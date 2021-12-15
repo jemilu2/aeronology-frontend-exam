@@ -6,7 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 import TodoItem from "./TodoItem";
 import { useAppSelector } from "./app/hooks";
 import {  selectTodos } from "./features/todo/todoSlice"; //addTodo,
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import {  useTodoMutation } from "./features/todo/useTodoMutation";
@@ -17,6 +17,7 @@ const theme = unstable_createMuiStrictModeTheme();
 function App() {
   const [title, setTitle] = useState("");
   const [showSnackBar, setSnackbarVisibility] = useState(false);
+  const [showSuccessSnackBar, setSuccessSnackbarVisibility] = useState(false);
   const todos = useAppSelector(selectTodos);
   const todoIsValid = !!(title && title.trim().length > 0);
 
@@ -27,13 +28,12 @@ function App() {
   const [addTodo, { data, loading, error, reset }] = useTodoMutation();
 
   if (data) {
-    console.log("Added a todo?")
     reset && reset()
+    setSuccessSnackbarVisibility(true)
   }
   if (error) {
-    console.log("Error");
-    setSnackbarVisibility(true);
     reset && reset()
+    setSnackbarVisibility(true);
   }
 
   useEffect(() => {
@@ -66,6 +66,7 @@ function App() {
               variant="outlined"
               value={title}
               onInput={(event: any) => setTitle(event.target.value)}
+              onKeyPress={ (event: React.SyntheticEvent | Event) => (event as any).key === "Enter" && todoIsValid && addTodoHandler() }
             />
             <LoadingButton
               loading={loading}
@@ -106,6 +107,23 @@ function App() {
           We were not able to process your request.
           <br />
           Mock server randomly rejects 20% of the time
+        </MuiAlert>
+      </Snackbar>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={showSuccessSnackBar}
+        onClose={() => setSuccessSnackbarVisibility(false)}
+        key={"top-right"}
+        autoHideDuration={2500}
+        title="Operation Successful!"
+      >
+        <MuiAlert
+          onClose={() => setSuccessSnackbarVisibility(false)}
+          severity={"success"}
+          sx={{ width: "100%" }}
+        >
+          Todo Added Successfully!
         </MuiAlert>
       </Snackbar>
     </ThemeProvider>
