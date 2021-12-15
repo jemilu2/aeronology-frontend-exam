@@ -24,17 +24,21 @@ function App() {
     setSnackbarVisibility(false);
   };
 
-  const [addTodo, { data, loading, error }] = useTodoMutation();
+  const [addTodo, { data, loading, error, reset }] = useTodoMutation();
 
-  if (loading) console.log("Loading", loading)
-  if (error) console.log("error", error);
+  if (data) {
+    console.log("Added a todo?")
+    reset && reset()
+  }
+  if (error) {
+    console.log("Error");
+    setSnackbarVisibility(true);
+    reset && reset()
+  }
 
   useEffect(() => {
-    if(todoIsValid) {
-      console.log("We probably just added a todo")
-    }
     setTitle("")
-  }, [todos, todoIsValid])
+  }, [todos])
 
   const addTodoHandler = async () => {
     if (!todoIsValid) return;
@@ -92,14 +96,16 @@ function App() {
         open={showSnackBar}
         onClose={closeSnackBarHandler}
         key={"top-right"}
-        autoHideDuration={1500}
+        autoHideDuration={2500}
       >
         <MuiAlert
           onClose={closeSnackBarHandler}
-          severity={"success"}
+          severity={"error"}
           sx={{ width: "100%" }}
         >
-          Todo added successfully
+          We were not able to process your request.
+          <br />
+          Mock server randomly rejects 20% of the time
         </MuiAlert>
       </Snackbar>
     </ThemeProvider>

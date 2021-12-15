@@ -12,7 +12,7 @@ export interface iResult {
     reset?: Function
 }
 
-export function useTodoMutation(): [Function, { loading: boolean; error: string; data: any }] {
+export function useTodoMutation(): [Function, iResult] {
     const dispatch = useAppDispatch();
     const [result, setResult] = useState<iResult>({
         loading: false,
