@@ -1,23 +1,16 @@
 import "./TodoItem.css";
 import { ThemeProvider } from "@mui/material/styles";
-// import { createTheme } from '@mui/system';
 import Button from "@mui/material/Button";
 import { Checkbox, TextField } from "@mui/material";
 import { unstable_createMuiStrictModeTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { iTodo } from "./features/todo/todoSlice";
 
 const theme = unstable_createMuiStrictModeTheme();
 
-export interface iTodo {
-  id: number;
-  title: string;
-  done: boolean;
-  deleted: boolean;
-}
-
 function TodoItem(props: { todo: iTodo }) {
-  const { id, title, done, deleted } = props.todo;
+  const { title, done } = props.todo;
   return (
     <ThemeProvider theme={theme}>
       <div className="todo-item">

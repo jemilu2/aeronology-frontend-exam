@@ -5,16 +5,13 @@ import { TextField } from "@mui/material";
 import { unstable_createMuiStrictModeTheme } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
 import TodoItem from "./TodoItem";
+import { useAppSelector } from "./app/hooks";
+import { selectTodos } from "./features/todo/todoSlice";
 
 const theme = unstable_createMuiStrictModeTheme();
 
 function App() {
-  const todo: any = {
-    title: "Whatever",
-    id: 1,
-    deleted: false,
-    done: true,
-  };
+  const todos = useAppSelector(selectTodos);
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
@@ -38,7 +35,7 @@ function App() {
         </div>
 
         <div className="todos-container">
-          <TodoItem todo={todo}></TodoItem>
+          { todos.map((todo) => <TodoItem key={todo.id} todo={todo}></TodoItem>) }
         </div>
       </div>
     </ThemeProvider>
