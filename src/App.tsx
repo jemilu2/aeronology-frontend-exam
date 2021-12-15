@@ -5,13 +5,27 @@ import { TextField } from "@mui/material";
 import { unstable_createMuiStrictModeTheme } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
 import TodoItem from "./TodoItem";
-import { useAppSelector } from "./app/hooks";
-import { selectTodos } from "./features/todo/todoSlice";
+import { useAppSelector, useAppDispatch } from "./app/hooks";
+import { addTodo, selectTodos } from "./features/todo/todoSlice";
+import { useState } from "react";
 
 const theme = unstable_createMuiStrictModeTheme();
 
 function App() {
   const todos = useAppSelector(selectTodos);
+  const [title, setTitle] = useState("");
+  const dispatch = useAppDispatch();
+
+  const addTodoHandler = () => {
+    const newTodo = {
+      title,
+      id: todos.length + 1,
+      deleted: false,
+      done: false
+    }
+    dispatch(addTodo(newTodo))
+    setTitle("");
+  }
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
@@ -26,8 +40,10 @@ function App() {
               className="todo-title"
               size="small"
               variant="outlined"
+              value={title}
+              onInput={(event: any) => setTitle(event.target.value)}
             />
-            <Button variant="outlined" className="add-todo-btn">
+            <Button variant="outlined" className="add-todo-btn" onClick={addTodoHandler}>
               <AddIcon fontSize="small" />
               Add
             </Button>
