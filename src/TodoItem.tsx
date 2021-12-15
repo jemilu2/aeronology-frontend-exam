@@ -5,11 +5,16 @@ import { Checkbox, TextField } from "@mui/material";
 import { unstable_createMuiStrictModeTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { iTodo } from "./features/todo/todoSlice";
+import { deleteTodo, iTodo } from "./features/todo/todoSlice";
+import { useAppDispatch } from "./app/hooks";
 
 const theme = unstable_createMuiStrictModeTheme();
 
 function TodoItem(props: { todo: iTodo }) {
+  const dispatch = useAppDispatch();
+  const deleteTodoHandler = () => {
+    dispatch(deleteTodo(props.todo))
+  }
   const { title, done } = props.todo;
   return (
     <ThemeProvider theme={theme}>
@@ -26,7 +31,7 @@ function TodoItem(props: { todo: iTodo }) {
         <Button variant="outlined" color="secondary" className="action-btn">
           <EditIcon fontSize="small" />
         </Button>
-        <Button variant="outlined" color="error" className="action-btn">
+        <Button variant="outlined" color="error" className="action-btn" onClick={deleteTodoHandler}>
           <DeleteIcon fontSize="small" color="warning" />
         </Button>
       </div>

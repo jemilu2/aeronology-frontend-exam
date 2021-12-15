@@ -15,17 +15,19 @@ function App() {
   const todos = useAppSelector(selectTodos);
   const [title, setTitle] = useState("");
   const dispatch = useAppDispatch();
+  const todoIsValid = !!(title && title.trim().length > 0);
 
   const addTodoHandler = () => {
+    if (!todoIsValid) return;
     const newTodo = {
-      title,
+      title: title.trim(),
       id: todos.length + 1,
       deleted: false,
-      done: false
-    }
-    dispatch(addTodo(newTodo))
+      done: false,
+    };
+    dispatch(addTodo(newTodo));
     setTitle("");
-  }
+  };
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
@@ -43,16 +45,25 @@ function App() {
               value={title}
               onInput={(event: any) => setTitle(event.target.value)}
             />
-            <Button variant="outlined" className="add-todo-btn" onClick={addTodoHandler}>
+            <Button
+              variant="outlined"
+              className="add-todo-btn"
+              onClick={addTodoHandler}
+              disabled={!todoIsValid}
+            >
               <AddIcon fontSize="small" />
               Add
             </Button>
           </article>
         </div>
 
-        <div className="todos-container">
-          { todos.map((todo) => <TodoItem key={todo.id} todo={todo}></TodoItem>) }
-        </div>
+        {todos.length > 0 ? (
+          <div className="todos-container">
+            {todos.map((todo) => (
+              <TodoItem key={todo.id} todo={todo}></TodoItem>
+            ))}
+          </div>
+        ) :<h4 style={{ textAlign: "center" }}>Nothing doing?</h4>}
       </div>
     </ThemeProvider>
   );

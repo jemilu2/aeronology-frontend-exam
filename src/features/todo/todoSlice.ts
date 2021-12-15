@@ -36,7 +36,7 @@ export const todoSlice = createSlice({
         deleteTodo: (state: iTodoState, action: PayloadAction<iTodo>) =>  {
             const index = state.todos.map((todo: iTodo) => todo.id).indexOf(action.payload.id)
             if(index !== -1) {
-                state.todos.splice(index)
+                state.todos.splice(index, 1)
             }
         },
         completeTodo: (state: iTodoState, action: PayloadAction<iTodo>) =>  {
