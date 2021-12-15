@@ -8,14 +8,23 @@ import TodoItem from "./TodoItem";
 import { useAppSelector, useAppDispatch } from "./app/hooks";
 import { addTodo, selectTodos } from "./features/todo/todoSlice";
 import { useState } from "react";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertColor } from "@mui/material/Alert";
 
 const theme = unstable_createMuiStrictModeTheme();
 
 function App() {
-  const todos = useAppSelector(selectTodos);
   const [title, setTitle] = useState("");
+  const [snackBarMessage, setSnackBarMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("info");
+  const [showSnackBar, setSnackbarVisibility] = useState(false);
+  const todos = useAppSelector(selectTodos);
   const dispatch = useAppDispatch();
   const todoIsValid = !!(title && title.trim().length > 0);
+
+  const closeSnackBarHandler = () => {
+    setSnackbarVisibility(false);
+  };
 
   const addTodoHandler = () => {
     if (!todoIsValid) return;
@@ -27,6 +36,9 @@ function App() {
     };
     dispatch(addTodo(newTodo));
     setTitle("");
+    setSnackBarMessage("Todo added successfully");
+    setAlertSeverity("success");
+    setSnackbarVisibility(true);
   };
   return (
     <ThemeProvider theme={theme}>
@@ -63,8 +75,25 @@ function App() {
               <TodoItem key={todo.id} todo={todo}></TodoItem>
             ))}
           </div>
-        ) :<h4 style={{ textAlign: "center" }}>Nothing doing?</h4>}
+        ) : (
+          <h4 style={{ textAlign: "center" }}>Nothing doing?</h4>
+        )}
       </div>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={showSnackBar}
+        onClose={closeSnackBarHandler}
+        key={"top-right"}
+        autoHideDuration={1500}
+      >
+        <MuiAlert
+          onClose={closeSnackBarHandler}
+          severity={alertSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackBarMessage}
+        </MuiAlert>
+      </Snackbar>
     </ThemeProvider>
   );
 }
