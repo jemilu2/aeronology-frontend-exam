@@ -1,32 +1,42 @@
 import "./App.css";
 import { ThemeProvider } from "@mui/material/styles";
-import Button from "@mui/material/Button";
 import { TextField } from "@mui/material";
 import { unstable_createMuiStrictModeTheme } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
 import TodoItem from "./TodoItem";
-import { useAppSelector, useAppDispatch } from "./app/hooks";
-import { addTodo, selectTodos } from "./features/todo/todoSlice";
-import { useState } from "react";
+import { useAppSelector } from "./app/hooks";
+import {  selectTodos } from "./features/todo/todoSlice"; //addTodo,
+import { useEffect, useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
-import MuiAlert, { AlertColor } from "@mui/material/Alert";
+import MuiAlert from "@mui/material/Alert";
+import {  useTodoMutation } from "./features/todo/useTodoMutation";
+import LoadingButton from '@mui/lab/LoadingButton';
 
 const theme = unstable_createMuiStrictModeTheme();
 
 function App() {
   const [title, setTitle] = useState("");
-  const [snackBarMessage, setSnackBarMessage] = useState("");
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("info");
   const [showSnackBar, setSnackbarVisibility] = useState(false);
   const todos = useAppSelector(selectTodos);
-  const dispatch = useAppDispatch();
   const todoIsValid = !!(title && title.trim().length > 0);
 
   const closeSnackBarHandler = () => {
     setSnackbarVisibility(false);
   };
 
-  const addTodoHandler = () => {
+  const [addTodo, { data, loading, error }] = useTodoMutation();
+
+  if (loading) console.log("Loading", loading)
+  if (error) console.log("error", error);
+
+  useEffect(() => {
+    if(todoIsValid) {
+      console.log("We probably just added a todo")
+    }
+    setTitle("")
+  }, [todos, todoIsValid])
+
+  const addTodoHandler = async () => {
     if (!todoIsValid) return;
     const newTodo = {
       title: title.trim(),
@@ -34,11 +44,7 @@ function App() {
       deleted: false,
       done: false,
     };
-    dispatch(addTodo(newTodo));
-    setTitle("");
-    setSnackBarMessage("Todo added successfully");
-    setAlertSeverity("success");
-    setSnackbarVisibility(true);
+    addTodo(newTodo);
   };
   return (
     <ThemeProvider theme={theme}>
@@ -57,15 +63,17 @@ function App() {
               value={title}
               onInput={(event: any) => setTitle(event.target.value)}
             />
-            <Button
+            <LoadingButton
+              loading={loading}
+              loadingPosition="start"
+              startIcon={<AddIcon fontSize="small" />}
               variant="outlined"
               className="add-todo-btn"
               onClick={addTodoHandler}
-              disabled={!todoIsValid}
+              disabled={!todoIsValid || loading}
             >
-              <AddIcon fontSize="small" />
-              Add
-            </Button>
+              Save
+            </LoadingButton>
           </article>
         </div>
 
@@ -88,10 +96,10 @@ function App() {
       >
         <MuiAlert
           onClose={closeSnackBarHandler}
-          severity={alertSeverity}
+          severity={"success"}
           sx={{ width: "100%" }}
         >
-          {snackBarMessage}
+          Todo added successfully
         </MuiAlert>
       </Snackbar>
     </ThemeProvider>
