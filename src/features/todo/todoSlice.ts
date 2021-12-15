@@ -41,10 +41,9 @@ export const todoSlice = createSlice({
         },
         completeTodo: (state: iTodoState, action: PayloadAction<iTodo>) =>  {
             const { payload: todo } = action;
-            todo.done = true;
             const index = state.todos.map((todo: iTodo) => todo.id).indexOf(action.payload.id)
             if(index !== -1) {
-                state.todos.splice(index, 1, todo)
+                state.todos.splice(index, 1, { ...todo, done: true })
             }
         },
         editTodo: (state: iTodoState, action: PayloadAction<iTodo>) =>  {
