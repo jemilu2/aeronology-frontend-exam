@@ -59,7 +59,7 @@ function App() {
         <div className="todo-header-container">
           <article className="todo-header">
             <TextField
-              id="outlined-basic"
+              id="todo-title-input"
               placeholder="What do you need to do?"
               className="todo-title"
               size="small"
@@ -76,6 +76,7 @@ function App() {
               className="add-todo-btn"
               onClick={addTodoHandler}
               disabled={!todoIsValid || loading}
+              id="add-new-todo"
             >
               Save
             </LoadingButton>
