@@ -96,7 +96,7 @@ function App() {
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         open={showSnackBar}
         onClose={closeSnackBarHandler}
-        key={"top-right"}
+        key={"top-right-error"}
         autoHideDuration={2500}
       >
         <MuiAlert
@@ -114,7 +114,7 @@ function App() {
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         open={showSuccessSnackBar}
         onClose={() => setSuccessSnackbarVisibility(false)}
-        key={"top-right"}
+        key={"top-right-success"}
         autoHideDuration={2500}
         title="Operation Successful!"
       >
