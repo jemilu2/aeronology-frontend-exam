@@ -11,12 +11,15 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist';
+
 import storage from 'redux-persist/lib/storage';
 
+
 const persistConfig = {
-  key: 'todo',
+  key: 'root',
   version: 1,
   storage,
+  whiteList: ["todo"]
 }
 
 export const persistedReducer = persistReducer(persistConfig, combineReducers({ todo: todosReducer }));
@@ -28,7 +31,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }),
+    })
 });
 
 export const storePersistor = persistStore(store);

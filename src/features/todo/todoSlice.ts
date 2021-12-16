@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { PURGE } from 'redux-persist';
 import { RootState } from '../../app/store';
 
 export interface iTodo {
@@ -49,11 +50,18 @@ export const todoSlice = createSlice({
                 state.todos.splice(index, 1, todo)
             }
         }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(PURGE, (state) => {
+            state.todos = [];
+        });
     }
 })
 
 // action creators derived from 
 export const { addTodo, deleteTodo, completeTodo, editTodo } = todoSlice.actions;
+
+export const purgeTodos = createAction("persist/PURGE")
 
 // Just a few computed properties
 
