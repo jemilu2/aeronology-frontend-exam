@@ -1,16 +1,18 @@
 import "./App.css";
 import { ThemeProvider } from "@mui/material/styles";
-import { TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { unstable_createMuiStrictModeTheme } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
+import ReplayIcon from "@mui/icons-material/ReplayOutlined"
 import TodoItem from "./TodoItem";
-import { useAppSelector } from "./app/hooks";
-import {  selectTodos } from "./features/todo/todoSlice"; //addTodo,
+import { useAppDispatch, useAppSelector } from "./app/hooks";
+import { purgeTodos, resetTodo, selectTodos } from "./features/todo/todoSlice"; //addTodo,
 import React, { useEffect, useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-import {  useTodoMutation } from "./features/todo/useTodoMutation";
-import LoadingButton from '@mui/lab/LoadingButton';
+import { useTodoMutation } from "./features/todo/useTodoMutation";
+import LoadingButton from "@mui/lab/LoadingButton";
+import Typography from '@mui/material/Typography';
 
 const theme = unstable_createMuiStrictModeTheme();
 
@@ -19,6 +21,7 @@ function App() {
   const [showSnackBar, setSnackbarVisibility] = useState(false);
   const [showSuccessSnackBar, setSuccessSnackbarVisibility] = useState(false);
   const todos = useAppSelector(selectTodos);
+  const dispatch = useAppDispatch()
   const todoIsValid = !!(title && title.trim().length > 0);
 
   const closeSnackBarHandler = () => {
@@ -28,17 +31,17 @@ function App() {
   const [addTodo, { data, loading, error, reset }] = useTodoMutation();
 
   if (data) {
-    reset && reset()
-    setSuccessSnackbarVisibility(true)
+    reset && reset();
+    setSuccessSnackbarVisibility(true);
   }
   if (error) {
-    reset && reset()
+    reset && reset();
     setSnackbarVisibility(true);
   }
 
   useEffect(() => {
-    setTitle("")
-  }, [todos])
+    setTitle("");
+  }, [todos]);
 
   const addTodoHandler = async () => {
     if (!todoIsValid) return;
@@ -50,11 +53,18 @@ function App() {
     };
     addTodo(newTodo);
   };
+
+  const purgeTodoHandler = () => {
+    dispatch(resetTodo())
+    dispatch(purgeTodos());
+  }
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
         <header className="App-header">
-          <h2 style={{ textAlign: "center" }}>Things to do</h2>
+          <Typography variant="h4" gutterBottom component="div">
+           Things to do
+          </Typography>
         </header>
         <div className="todo-header-container">
           <article className="todo-header">
@@ -66,7 +76,11 @@ function App() {
               variant="outlined"
               value={title}
               onInput={(event: any) => setTitle(event.target.value)}
-              onKeyPress={ (event: React.SyntheticEvent | Event) => (event as any).key === "Enter" && todoIsValid && addTodoHandler() }
+              onKeyPress={(event: React.SyntheticEvent | Event) =>
+                (event as any).key === "Enter" &&
+                todoIsValid &&
+                addTodoHandler()
+              }
             />
             <LoadingButton
               loading={loading}
@@ -90,8 +104,24 @@ function App() {
             ))}
           </div>
         ) : (
-          <h4 style={{ textAlign: "center" }}>Nothing doing?</h4>
+          <Typography variant="h5" gutterBottom component="div">
+           Nothing to do
+          </Typography>
         )}
+        <div className="todos-footer" >
+          {todos.length > 0 && (
+            <Button
+              startIcon={<ReplayIcon fontSize="small" />}
+              variant="text"
+              className="purge-todo-btn"
+              onClick={purgeTodoHandler}
+              disabled={loading}
+              id="add-new-todo"
+            >
+              Reset
+            </Button>
+          )}
+        </div>
       </div>
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}

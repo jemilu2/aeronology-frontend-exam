@@ -49,6 +49,9 @@ export const todoSlice = createSlice({
             if (index !== -1) {
                 state.todos.splice(index, 1, todo)
             }
+        },
+        resetTodo: (state: iTodoState) => {
+            state.todos = [];
         }
     },
     extraReducers: (builder) => {
@@ -59,7 +62,7 @@ export const todoSlice = createSlice({
 })
 
 // action creators derived from 
-export const { addTodo, deleteTodo, completeTodo, editTodo } = todoSlice.actions;
+export const { addTodo, deleteTodo, completeTodo, editTodo, resetTodo } = todoSlice.actions;
 
 export const purgeTodos = createAction("persist/PURGE")
 
