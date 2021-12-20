@@ -43,10 +43,10 @@ export function useTodoMutation(): [Function, iResult] {
                     const result = {
                         called: true,
                         loading: false,
-                        data: response.data,
+                        data: (response as any).data,
                         error: undefined,
                     };
-                    dispatch(addTodo(response.data))
+                    dispatch(addTodo((response as any).data))
                     setResult(ref.current.result = result);
                 }
             })
@@ -69,13 +69,26 @@ export function useTodoMutation(): [Function, iResult] {
             })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    // in this case the momoized function returned will not change
+    // at all since there are no inputs
 
     const reset = useCallback(() => {
         setResult({ data: null, loading: false, error: "" });
     }, []);
+    // this is useful because we need to reset everything back to its original
+    // state once we finish executing. This makes the function re-rentrant.
+    // as in purer since we could run it multiple times and previous invocations
+    // will not affect subsequent invocations.
+    
+    // the fact that it 
+    // was previously executed will not affect subsequent invocations
 
     useEffect(() => () => {
         ref.current.isMounted = false;
+
+        // I wonder why I'm setting is mounted false here - after the use
+        // effect is executed. While I set it to true. in the declaration
+        // of the useRef
     }, []);
 
     return [execute, { reset, ...result }];

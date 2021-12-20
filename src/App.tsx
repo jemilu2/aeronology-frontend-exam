@@ -128,7 +128,7 @@ function App() {
         open={showSnackBar}
         onClose={closeSnackBarHandler}
         key={"top-right-error"}
-        autoHideDuration={2500}
+        autoHideDuration={7000}
       >
         <MuiAlert
           onClose={closeSnackBarHandler}
@@ -146,7 +146,7 @@ function App() {
         open={showSuccessSnackBar}
         onClose={() => setSuccessSnackbarVisibility(false)}
         key={"top-right-success"}
-        autoHideDuration={2500}
+        autoHideDuration={7000}
         title="Operation Successful!"
       >
         <MuiAlert
