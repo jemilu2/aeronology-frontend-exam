@@ -18,7 +18,3 @@ export function makeCrudRequest(todo: iTodo) {
     }, 800)
   );
 }
-
-export const addTodoAsync = makeCrudRequest;
-export const editTodoAsync = makeCrudRequest;
-export const deleteTodoAsync = makeCrudRequest;

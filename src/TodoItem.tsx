@@ -9,7 +9,7 @@ import { deleteTodo, editTodo, iTodo } from "./features/todo/todoSlice";
 import { useAppDispatch } from "./app/hooks";
 import { useState } from "react";
 import { useMutation } from "./features/todo/useMutation";
-import { editTodoAsync } from "./features/todo/todoApi";
+import { makeCrudRequest as editTodoAsync } from "./features/todo/todoApi";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save"
 import Snackbar from "@mui/material/Snackbar";
@@ -123,6 +123,13 @@ function TodoItem({ todo }: { todo: iTodo }) {
           size="small"
           variant="outlined"
           onChange={(event: any) => setEditingTitle(event?.target.value)}
+          onKeyPress={(event: React.SyntheticEvent | Event) =>
+            (event as any).key === "Enter" &&
+            editingTitle && editingTitle.length > 0 &&
+            saveTodoHandler()
+          }
+          // onPointerOutCapture={editTodoHandler}
+          onPointerDownCapture={editTodoHandler}
         />
         {!editing ? defaultActions : editingActions}
       </div>

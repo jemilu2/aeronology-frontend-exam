@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { equal } from '@wry/equality';
-import { addTodoAsync } from './todoApi';
+import { makeCrudRequest as addTodoAsync } from './todoApi';
 import { useAppDispatch } from '../../app/hooks';
 import { addTodo } from './todoSlice';
 
@@ -38,7 +38,7 @@ export function useTodoMutation(): [Function, iResult] {
         }
         const mutationId = ++ref.current.mutationId;
         return addTodoAsync(todo as any)
-            .then((response) => {
+            .then((response: any) => {
                 if (ref.current.isMounted && !equal(ref.current.result, result)) {
                     const result = {
                         called: true,
@@ -50,7 +50,7 @@ export function useTodoMutation(): [Function, iResult] {
                     setResult(ref.current.result = result);
                 }
             })
-            .catch((error) => {
+            .catch((error: any) => {
                 if (
                     mutationId === ref.current.mutationId &&
                     ref.current.isMounted

@@ -23,7 +23,7 @@ function useFriendStatus(friendID) {
  */
 
 import { useEffect, useState } from "react";
-import { addTodoAsync } from "./todoApi";
+import { makeCrudRequest as addTodoAsync } from "./todoApi";
 import { iTodo } from "./todoSlice";
 
 export interface iUseTodoResponse {
