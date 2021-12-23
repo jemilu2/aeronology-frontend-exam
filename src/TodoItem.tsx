@@ -23,6 +23,7 @@ function TodoItem({ todo }: { todo: iTodo }) {
   const [editing, setEditing] = useState(false);
   const [editingTitle, setEditingTitle] = useState("");
   const [showSuccessSnackBar, setSuccessSnackbarVisibility] = useState(false);
+  const [showFailureSnackBar, setFailureSnackbarVisibility] = useState(false);
 
   const dispatch = useAppDispatch();
   const deleteTodoHandler = () => {
@@ -50,6 +51,7 @@ function TodoItem({ todo }: { todo: iTodo }) {
 
   if (error) {
     reset && reset();
+    setFailureSnackbarVisibility(true);
     // cancelTodoEditingHandler();
   }
 
@@ -131,7 +133,7 @@ function TodoItem({ todo }: { todo: iTodo }) {
         open={showSuccessSnackBar}
         onClose={() => setSuccessSnackbarVisibility(false)}
         key={"top-right-success"}
-        autoHideDuration={7000}
+        autoHideDuration={5000}
         title="Operation Successful!"
       >
         <MuiAlert
@@ -140,6 +142,23 @@ function TodoItem({ todo }: { todo: iTodo }) {
           sx={{ width: "100%" }}
         >
           Todo Edited Successfully!
+        </MuiAlert>
+      </Snackbar>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={showFailureSnackBar}
+        onClose={() => setSuccessSnackbarVisibility(false)}
+        key={"top-right-success"}
+        autoHideDuration={1000}
+        title="Operation Successful!"
+      >
+        <MuiAlert
+          onClose={() => setFailureSnackbarVisibility(false)}
+          severity={"error"}
+          sx={{ width: "100%" }}
+        >
+          Todo Editing Failed!
         </MuiAlert>
       </Snackbar>
     </ThemeProvider>
