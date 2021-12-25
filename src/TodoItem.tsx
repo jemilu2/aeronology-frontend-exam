@@ -23,8 +23,19 @@ export interface iTodoItemState {
 }
 
 export interface iTodoItemAction {
-  type: string;
+  type: TodoAction;
   payload?: any;
+}
+
+enum TodoAction {
+  SET_EDITING_TODO_TITLE="SET_EDITING_TODO_TITLE",
+  EDIT_TODO="EDIT_TODO",
+  CANCEL_EDITING="CANCEL_EDITING",
+  TODO_EDITED="TODO_EDITED",
+  SET_SUCCESS_SNACKBAR_VISIBILITY="SET_SUCCESS_SNACKBAR_VISIBILITY",
+  SET_FAILURE_SNACKBAR_VISIBILITY="SET_FAILURE_SNACKBAR_VISIBILITY",
+  HIDE_SUCCESS_SNACKBAR="HIDE_SUCCESS_SNACKBAR",
+  HIDE_FAILURE_SNACKBAR="HIDE_FAILURE_SNACKBAR",
 }
 
 const initialState = {
@@ -37,21 +48,21 @@ const initialState = {
 export function reducer(state: iTodoItemState, action: iTodoItemAction) {
   const { payload } = action;
   switch (action.type) {
-    case 'SET_EDITING_TODO_TITLE':
+    case TodoAction.SET_EDITING_TODO_TITLE:
       return { ...state, editingTitle: payload }
-    case 'EDIT_TODO':
+    case TodoAction.EDIT_TODO:
       return {...state, editingTitle: payload, editing: true };
-    case 'CANCEL_EDITING':
+    case TodoAction.CANCEL_EDITING:
       return { ...state, editing: false, editingTitle: "" };
-    case 'TODO_EDITED':
+    case TodoAction.TODO_EDITED:
       return { ...state, editing: false, editingTitle: "", showSuccessSnackBar: true };
-    case 'SET_SUCCESS_SNACKBAR_VISIBILITY':
+    case TodoAction.SET_SUCCESS_SNACKBAR_VISIBILITY:
       return { ...state, editing: false, editingTitle: "", showSuccessSnackBar: payload };
-    case 'SET_FAILURE_SNACKBAR_VISIBILITY':
+    case TodoAction.SET_FAILURE_SNACKBAR_VISIBILITY:
         return { ...state, editing: false, editingTitle: "", showFailureSnackBar: payload };
-    case 'HIDE_SUCCESS_SNACKBAR':
+    case TodoAction.HIDE_SUCCESS_SNACKBAR:
       return { ...state, showSuccessSnackBar: false }
-    case 'HIDE_FAILURE_SNACKBAR':
+    case TodoAction.HIDE_FAILURE_SNACKBAR:
         return { ...state, showFailureSnackBar: false }
     default:
       throw new Error();
@@ -69,12 +80,12 @@ function TodoItem({ todo }: { todo: iTodo }) {
   const [editTodoExecutor, { data, loading, error, reset }] = useMutation<iTodo>(editTodoAsync as any, editTodo);
   if (data) {
     reset && reset();
-    todoItemdispatch({ type: "TODO_EDITED" })
+    todoItemdispatch({ type: TodoAction.TODO_EDITED })
   }
 
   if (error) {
     reset && reset();
-    todoItemdispatch({ type: "SET_FAILURE_SNACKBAR_VISIBILITY", payload: true })
+    todoItemdispatch({ type: TodoAction.SET_FAILURE_SNACKBAR_VISIBILITY, payload: true })
   }
 
   const saveTodoHandler = () => {
@@ -88,7 +99,7 @@ function TodoItem({ todo }: { todo: iTodo }) {
       color="secondary"
       className="action-btn"
       disabled={todo.done}
-      onClick={() => todoItemdispatch({ type: "EDIT_TODO", payload: todo.title })}
+      onClick={() => todoItemdispatch({ type: TodoAction.EDIT_TODO, payload: todo.title })}
     >
       <EditIcon fontSize="small" />
     </Button>,
@@ -122,7 +133,7 @@ function TodoItem({ todo }: { todo: iTodo }) {
       variant="outlined"
       color="primary"
       className="action-btn"
-      onClick={() => todoItemdispatch({ type: "CANCEL_EDITING" })}
+      onClick={() => todoItemdispatch({ type: TodoAction.CANCEL_EDITING })}
     >
       Cancel
     </Button>,
@@ -144,7 +155,7 @@ function TodoItem({ todo }: { todo: iTodo }) {
           className="todo-input"
           size="small"
           variant="outlined"
-          onChange={(event: any) => todoItemdispatch({ type: "SET_EDITING_TODO_TITLE", payload:event.target.value })}
+          onChange={(event: any) => todoItemdispatch({ type: TodoAction.SET_EDITING_TODO_TITLE, payload:event.target.value })}
           onKeyPress={(event: React.SyntheticEvent | Event) =>
             (event as any).key === "Enter" &&
             editingTitle && editingTitle.length > 0 &&
@@ -158,13 +169,13 @@ function TodoItem({ todo }: { todo: iTodo }) {
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         open={showSuccessSnackBar}
-        onClose={() => todoItemdispatch({ type: "HIDE_SUCCESS_SNACKBAR" })}
+        onClose={() => todoItemdispatch({ type: TodoAction.HIDE_SUCCESS_SNACKBAR })}
         key={"top-right-success"}
         autoHideDuration={5000}
         title="Operation Successful!"
       >
         <MuiAlert
-          onClose={() => todoItemdispatch({ type: "HIDE_SUCCESS_SNACKBAR" })}
+          onClose={() => todoItemdispatch({ type: TodoAction.HIDE_SUCCESS_SNACKBAR })}
           severity={"success"}
           sx={{ width: "100%" }}
         >
@@ -175,13 +186,13 @@ function TodoItem({ todo }: { todo: iTodo }) {
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         open={showFailureSnackBar}
-        onClose={() => todoItemdispatch({ type: 'HIDE_FAILURE_SNACKBAR' })}
+        onClose={() => todoItemdispatch({ type: TodoAction.HIDE_FAILURE_SNACKBAR })}
         key={"top-right-success"}
         autoHideDuration={1000}
         title="Operation Failed!"
       >
         <MuiAlert
-          onClose={() => todoItemdispatch({ type: 'HIDE_FAILURE_SNACKBAR' })}
+          onClose={() => todoItemdispatch({ type: TodoAction.HIDE_FAILURE_SNACKBAR })}
           severity={"error"}
           sx={{ width: "100%" }}
         >
