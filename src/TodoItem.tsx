@@ -7,7 +7,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { deleteTodo, editTodo, iTodo } from "./features/todo/todoSlice";
 import { useAppDispatch } from "./app/hooks";
-import { useReducer, useState } from "react";
+import { useReducer } from "react";
 import { useMutation } from "./features/todo/useMutation";
 import { makeCrudRequest as editTodoAsync } from "./features/todo/todoApi";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -20,6 +20,8 @@ export interface iTodoItemState {
   editingTitle: string;
   showSuccessSnackBar: boolean;
   showFailureSnackBar: boolean;
+  successSnackbarMessage: string;
+  failureSnackbarMessage: string;
 }
 
 export interface iTodoItemAction {
@@ -33,7 +35,7 @@ enum TodoAction {
   CANCEL_EDITING="CANCEL_EDITING",
   TODO_EDITED="TODO_EDITED",
   SET_SUCCESS_SNACKBAR_VISIBILITY="SET_SUCCESS_SNACKBAR_VISIBILITY",
-  SET_FAILURE_SNACKBAR_VISIBILITY="SET_FAILURE_SNACKBAR_VISIBILITY",
+  SHOW_FAILURE_SNACKBAR="SHOW_FAILURE_SNACKBAR",
   HIDE_SUCCESS_SNACKBAR="HIDE_SUCCESS_SNACKBAR",
   HIDE_FAILURE_SNACKBAR="HIDE_FAILURE_SNACKBAR",
 }
@@ -42,7 +44,9 @@ const initialState = {
   editing: false,
   editingTitle: "",
   showSuccessSnackBar: false,
-  showFailureSnackBar: false
+  showFailureSnackBar: false,
+  successSnackbarMessage: "",
+  failureSnackbarMessage: ""
 };
 
 export function reducer(state: iTodoItemState, action: iTodoItemAction) {
@@ -55,11 +59,11 @@ export function reducer(state: iTodoItemState, action: iTodoItemAction) {
     case TodoAction.CANCEL_EDITING:
       return { ...state, editing: false, editingTitle: "" };
     case TodoAction.TODO_EDITED:
-      return { ...state, editing: false, editingTitle: "", showSuccessSnackBar: true };
+      return { ...state, editing: false, editingTitle: "", showSuccessSnackBar: true, successSnackbarMessage: "Todo edited successfully" };
     case TodoAction.SET_SUCCESS_SNACKBAR_VISIBILITY:
       return { ...state, editing: false, editingTitle: "", showSuccessSnackBar: payload };
-    case TodoAction.SET_FAILURE_SNACKBAR_VISIBILITY:
-        return { ...state, editing: false, editingTitle: "", showFailureSnackBar: payload };
+    case TodoAction.SHOW_FAILURE_SNACKBAR:
+        return { ...state, editing: false, editingTitle: "", showFailureSnackBar: true, failureSnackbarMessage: payload };
     case TodoAction.HIDE_SUCCESS_SNACKBAR:
       return { ...state, showSuccessSnackBar: false }
     case TodoAction.HIDE_FAILURE_SNACKBAR:
@@ -85,7 +89,7 @@ function TodoItem({ todo }: { todo: iTodo }) {
 
   if (error) {
     reset && reset();
-    todoItemdispatch({ type: TodoAction.SET_FAILURE_SNACKBAR_VISIBILITY, payload: true })
+    todoItemdispatch({ type: TodoAction.SHOW_FAILURE_SNACKBAR, payload: error })
   }
 
   const saveTodoHandler = () => {
@@ -179,7 +183,7 @@ function TodoItem({ todo }: { todo: iTodo }) {
           severity={"success"}
           sx={{ width: "100%" }}
         >
-          Todo Edited Successfully!
+          { state.successSnackbarMessage }
         </MuiAlert>
       </Snackbar>
 
@@ -187,7 +191,7 @@ function TodoItem({ todo }: { todo: iTodo }) {
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         open={showFailureSnackBar}
         onClose={() => todoItemdispatch({ type: TodoAction.HIDE_FAILURE_SNACKBAR })}
-        key={"top-right-success"}
+        key={"top-right-failure"}
         autoHideDuration={1000}
         title="Operation Failed!"
       >
@@ -196,7 +200,7 @@ function TodoItem({ todo }: { todo: iTodo }) {
           severity={"error"}
           sx={{ width: "100%" }}
         >
-          Todo Editing Failed!
+          { state.failureSnackbarMessage }
         </MuiAlert>
       </Snackbar>
     </ThemeProvider>
