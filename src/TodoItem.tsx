@@ -196,7 +196,7 @@ function TodoItem({ todo }: { todo: iTodo }) {
         <Checkbox
           className="todo-checkbox"
           checked={todo.done}
-          onChange={() => dispatch(editTodo({ ...todo, done: !todo.done }))}
+          onChange={() => editTodoExecutor({ ...todo, done: !todo.done })}
         />
         <TextField
           id="outlined-basic"
