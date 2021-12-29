@@ -1,32 +1,49 @@
 import "./App.css";
 import { ThemeProvider } from "@mui/material/styles";
-import Button from "@mui/material/Button";
-import { TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { unstable_createMuiStrictModeTheme } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
+import ReplayIcon from "@mui/icons-material/ReplayOutlined"
 import TodoItem from "./TodoItem";
-import { useAppSelector, useAppDispatch } from "./app/hooks";
-import { addTodo, selectTodos } from "./features/todo/todoSlice";
-import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "./app/hooks";
+import { purgeTodos, resetTodo, selectTodos } from "./features/todo/todoSlice"; //addTodo,
+import React, { useEffect, useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
-import MuiAlert, { AlertColor } from "@mui/material/Alert";
+import MuiAlert from "@mui/material/Alert";
+import { useTodoMutation } from "./features/todo/useTodoMutation";
+import LoadingButton from "@mui/lab/LoadingButton";
+import Typography from '@mui/material/Typography';
 
 const theme = unstable_createMuiStrictModeTheme();
 
 function App() {
   const [title, setTitle] = useState("");
-  const [snackBarMessage, setSnackBarMessage] = useState("");
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("info");
   const [showSnackBar, setSnackbarVisibility] = useState(false);
+  const [showSuccessSnackBar, setSuccessSnackbarVisibility] = useState(false);
   const todos = useAppSelector(selectTodos);
-  const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch()
   const todoIsValid = !!(title && title.trim().length > 0);
 
   const closeSnackBarHandler = () => {
     setSnackbarVisibility(false);
   };
 
-  const addTodoHandler = () => {
+  const [addTodo, { data, loading, error, reset }] = useTodoMutation();
+
+  if (data) {
+    reset && reset();
+    setSuccessSnackbarVisibility(true);
+  }
+  if (error) {
+    reset && reset();
+    setSnackbarVisibility(true);
+  }
+
+  useEffect(() => {
+    setTitle("");
+  }, [todos]);
+
+  const addTodoHandler = async () => {
     if (!todoIsValid) return;
     const newTodo = {
       title: title.trim(),
@@ -34,38 +51,49 @@ function App() {
       deleted: false,
       done: false,
     };
-    dispatch(addTodo(newTodo));
-    setTitle("");
-    setSnackBarMessage("Todo added successfully");
-    setAlertSeverity("success");
-    setSnackbarVisibility(true);
+    addTodo(newTodo);
   };
+
+  const purgeTodoHandler = () => {
+    dispatch(resetTodo())
+    dispatch(purgeTodos());
+  }
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
         <header className="App-header">
-          <h2 style={{ textAlign: "center" }}>Things to do</h2>
+          <Typography variant="h4" gutterBottom component="div">
+           Things to do
+          </Typography>
         </header>
         <div className="todo-header-container">
           <article className="todo-header">
             <TextField
-              id="outlined-basic"
+              id="todo-title-input"
               placeholder="What do you need to do?"
               className="todo-title"
               size="small"
               variant="outlined"
               value={title}
               onInput={(event: any) => setTitle(event.target.value)}
+              onKeyPress={(event: React.SyntheticEvent | Event) =>
+                (event as any).key === "Enter" &&
+                todoIsValid &&
+                addTodoHandler()
+              }
             />
-            <Button
+            <LoadingButton
+              loading={loading}
+              loadingPosition="start"
+              startIcon={<AddIcon fontSize="small" />}
               variant="outlined"
               className="add-todo-btn"
               onClick={addTodoHandler}
-              disabled={!todoIsValid}
+              disabled={!todoIsValid || loading}
+              id="add-new-todo"
             >
-              <AddIcon fontSize="small" />
-              Add
-            </Button>
+              Save
+            </LoadingButton>
           </article>
         </div>
 
@@ -76,22 +104,57 @@ function App() {
             ))}
           </div>
         ) : (
-          <h4 style={{ textAlign: "center" }}>Nothing doing?</h4>
+          <Typography variant="h5" gutterBottom component="div">
+           Nothing to do
+          </Typography>
         )}
+        <div className="todos-footer" >
+          {todos.length > 0 && (
+            <Button
+              startIcon={<ReplayIcon fontSize="small" />}
+              variant="text"
+              className="purge-todo-btn"
+              onClick={purgeTodoHandler}
+              disabled={loading}
+              id="add-new-todo"
+            >
+              Reset
+            </Button>
+          )}
+        </div>
       </div>
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         open={showSnackBar}
         onClose={closeSnackBarHandler}
-        key={"top-right"}
-        autoHideDuration={1500}
+        key={"top-right-error"}
+        autoHideDuration={7000}
       >
         <MuiAlert
           onClose={closeSnackBarHandler}
-          severity={alertSeverity}
+          severity={"error"}
           sx={{ width: "100%" }}
         >
-          {snackBarMessage}
+          We were not able to process your request.
+          <br />
+          Mock server randomly rejects 20% of the time
+        </MuiAlert>
+      </Snackbar>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={showSuccessSnackBar}
+        onClose={() => setSuccessSnackbarVisibility(false)}
+        key={"top-right-success"}
+        autoHideDuration={7000}
+        title="Operation Successful!"
+      >
+        <MuiAlert
+          onClose={() => setSuccessSnackbarVisibility(false)}
+          severity={"success"}
+          sx={{ width: "100%" }}
+        >
+          Todo Added Successfully!
         </MuiAlert>
       </Snackbar>
     </ThemeProvider>
